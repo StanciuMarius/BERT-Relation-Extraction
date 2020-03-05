@@ -6,6 +6,7 @@ Created on Fri Nov 29 09:53:55 2019
 @author: weetee
 """
 import os
+import sys
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -46,7 +47,7 @@ def train_and_fit(args):
         model_name = 'ALBERT'
     
     net = Model.from_pretrained(model, force_download=False)
-    tokenizer = load_pickle("%s_tokenizer.pkl" % model_name)
+    tokenizer = load_pickle(args, "%s_tokenizer.pkl" % model_name)
     net.resize_token_embeddings(len(tokenizer)) 
     if cuda:
         net.cuda()
@@ -168,8 +169,8 @@ def train_and_fit(args):
                 }, os.path.join("./data/" , "test_model_best_%d.pth.tar" % args.model_no))
         
         if (epoch % 1) == 0:
-            save_as_pickle("test_losses_per_epoch_%d.pkl" % args.model_no, losses_per_epoch)
-            save_as_pickle("test_accuracy_per_epoch_%d.pkl" % args.model_no, accuracy_per_epoch)
+            save_as_pickle(args, "test_losses_per_epoch_%d.pkl" % args.model_no, losses_per_epoch)
+            save_as_pickle(args, "test_accuracy_per_epoch_%d.pkl" % args.model_no, accuracy_per_epoch)
             torch.save({
                     'epoch': epoch + 1,\
                     'state_dict': net.state_dict(),\

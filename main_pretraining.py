@@ -5,8 +5,9 @@ Created on Wed Nov 27 11:16:26 2019
 
 @author: weetee
 """
-from src.preprocessing_funcs import load_dataloaders
-from src.trainer import train_and_fit
+import sys
+from .src.preprocessing_funcs import load_dataloaders
+from .src.trainer import train_and_fit
 import logging
 from argparse import ArgumentParser
 
@@ -18,7 +19,7 @@ logging.basicConfig(format='%(asctime)s [%(levelname)s]: %(message)s', \
                     datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.INFO)
 logger = logging.getLogger('__file__')
 
-if __name__ == "__main__":
+def main(argv):
     parser = ArgumentParser()
     parser.add_argument("--pretrain_data", type=str, default="./data/cnn.txt", \
                         help="pre-training data .txt file path")
@@ -33,7 +34,12 @@ if __name__ == "__main__":
     parser.add_argument("--lr", type=float, default=0.00005, help="learning rate")
     parser.add_argument("--model_no", type=int, default=0, help='''Model ID: 0 - BERT\n
                                                                             1 - ALBERT''')
+    parser.add_argument("--temp_folder_path", type=str, default='./temp/',
+                        help="Directory where temporary files can be created")
     
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     
     output = train_and_fit(args)
+
+if __name__ == "__main__":
+    main(sys.argv)

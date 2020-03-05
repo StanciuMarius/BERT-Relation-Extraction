@@ -31,7 +31,7 @@ def load_pickle(filename):
 class infer_from_trained(object):
     def __init__(self, args=None, detect_entities=False):
         if args is None:
-            self.args = load_pickle("args.pkl")
+            self.args = load_pickle(args, "args.pkl")
         else:
             self.args = args
         self.cuda = torch.cuda.is_available()
@@ -60,7 +60,7 @@ class infer_from_trained(object):
         
         self.net = Model.from_pretrained(model, force_download=False, \
                                          task='classification', n_classes_=args.num_classes)
-        self.tokenizer = load_pickle("%s_tokenizer.pkl" % model_name)
+        self.tokenizer = load_pickle(args, "%s_tokenizer.pkl" % model_name)
         self.net.resize_token_embeddings(len(self.tokenizer))
         if self.cuda:
             self.net.cuda()
@@ -70,7 +70,7 @@ class infer_from_trained(object):
         self.e1_id = self.tokenizer.convert_tokens_to_ids('[E1]')
         self.e2_id = self.tokenizer.convert_tokens_to_ids('[E2]')
         self.pad_id = self.tokenizer.pad_token_id
-        self.rm = load_pickle("relations.pkl")
+        self.rm = load_pickle(args, "relations.pkl")
         
     def get_all_ent_pairs(self, sent):
         if isinstance(sent, str):

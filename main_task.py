@@ -5,7 +5,7 @@ Created on Mon Dec  2 17:40:16 2019
 
 @author: weetee
 """
-
+import sys
 from src.tasks.preprocessing_funcs import load_dataloaders
 from src.tasks.trainer import train_and_fit
 from src.tasks.infer import infer_from_trained
@@ -20,12 +20,16 @@ logging.basicConfig(format='%(asctime)s [%(levelname)s]: %(message)s', \
                     datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.INFO)
 logger = logging.getLogger('__file__')
 
-if __name__ == "__main__":
+def main(argv):
     parser = ArgumentParser()
     parser.add_argument("--train_data", type=str, default='./data/SemEval2010_task8_all_data/SemEval2010_task8_training/TRAIN_FILE.TXT', \
                         help="training data .txt file path")
     parser.add_argument("--test_data", type=str, default='./data/SemEval2010_task8_all_data/SemEval2010_task8_testing_keys/TEST_FILE_FULL.TXT', \
                         help="test data .txt file path")
+    parser.add_argument("--additional_tokens_path", type=str, default='./additional_tokens_file',
+                        help="Path to a csv file containing additional tokens to add the BERT dictionary")
+    parser.add_argument("--temp_folder_path", type=str, default='./temp/',
+                        help="Directory where temporary files can be created")
     parser.add_argument("--use_pretrained_blanks", type=int, default=0, help="0: Don't use pre-trained blanks model, 1: use pre-trained blanks model")
     parser.add_argument("--num_classes", type=int, default=19, help='number of relation classes')
     parser.add_argument("--batch_size", type=int, default=32, help="Training batch size")
@@ -40,7 +44,7 @@ if __name__ == "__main__":
     parser.add_argument("--train", type=int, default=1, help="0: Don't train, 1: train")
     parser.add_argument("--infer", type=int, default=1, help="0: Don't infer, 1: Infer")
     
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     
     if args.train == 1:
         net = train_and_fit(args)
@@ -57,3 +61,7 @@ if __name__ == "__main__":
             if sent.lower() in ['quit', 'exit']:
                 break
             inferer.infer_sentence(sent, detect_entities=False)
+
+
+if __name__ == "__main__":
+    main(sys.argv)

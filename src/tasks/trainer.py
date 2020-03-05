@@ -47,7 +47,7 @@ def train_and_fit(args):
     net = Model.from_pretrained(model, force_download=False, \
                                 task='classification', n_classes_=args.num_classes)
     
-    tokenizer = load_pickle("%s_tokenizer.pkl" % model_name)
+    tokenizer = load_pickle(args, "%s_tokenizer.pkl" % model_name)
     net.resize_token_embeddings(len(tokenizer)) 
     if cuda:
         net.cuda()
@@ -171,9 +171,9 @@ def train_and_fit(args):
                 }, os.path.join("./data/" , "task_test_model_best_%d.pth.tar" % args.model_no))
         
         if (epoch % 1) == 0:
-            save_as_pickle("task_test_losses_per_epoch_%d.pkl" % args.model_no, losses_per_epoch)
-            save_as_pickle("task_train_accuracy_per_epoch_%d.pkl" % args.model_no, accuracy_per_epoch)
-            save_as_pickle("task_test_f1_per_epoch_%d.pkl" % args.model_no, test_f1_per_epoch)
+            save_as_pickle(args, "task_test_losses_per_epoch_%d.pkl" % args.model_no, losses_per_epoch)
+            save_as_pickle(args, "task_train_accuracy_per_epoch_%d.pkl" % args.model_no, accuracy_per_epoch)
+            save_as_pickle(args, "task_test_f1_per_epoch_%d.pkl" % args.model_no, test_f1_per_epoch)
             torch.save({
                     'epoch': epoch + 1,\
                     'state_dict': net.state_dict(),\

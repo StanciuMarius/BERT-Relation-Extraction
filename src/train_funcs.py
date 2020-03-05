@@ -73,8 +73,8 @@ def load_results(model_no=0):
     losses_path = "./data/test_losses_per_epoch_%d.pkl" % model_no
     accuracy_path = "./data/test_accuracy_per_epoch_%d.pkl" % model_no
     if os.path.isfile(losses_path) and os.path.isfile(accuracy_path):
-        losses_per_epoch = load_pickle("test_losses_per_epoch_%d.pkl" % model_no)
-        accuracy_per_epoch = load_pickle("test_accuracy_per_epoch_%d.pkl" % model_no)
+        losses_per_epoch = load_pickle(args, "test_losses_per_epoch_%d.pkl" % model_no)
+        accuracy_per_epoch = load_pickle(args, "test_accuracy_per_epoch_%d.pkl" % model_no)
         logger.info("Loaded results buffer")
     else:
         losses_per_epoch, accuracy_per_epoch = [], []

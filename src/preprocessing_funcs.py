@@ -201,7 +201,7 @@ class pretrain_dataset(Dataset):
                                label3_pad_value=-1,\
                                label4_pad_value=-1)
         
-        save_as_pickle("%s_tokenizer.pkl" % (model_name), self.tokenizer)
+        save_as_pickle(args, "%s_tokenizer.pkl" % (model_name), self.tokenizer)
         logger.info("Saved %s tokenizer at ./data/%s_tokenizer.pkl" % (model_name, model_name))
         
     def put_blanks(self, D):
@@ -372,7 +372,7 @@ class Pad_Sequence():
 
 def load_dataloaders(args, max_length=50000):
     
-    if not os.path.isfile("./data/D.pkl"):
+    if not os.path.isfile(args.temp_folder_path, "D.pkl"):
         logger.info("Loading pre-training data...")
         with open(args.pretrain_data, "r", encoding="utf8") as f:
             text = f.readlines()
@@ -393,11 +393,11 @@ def load_dataloaders(args, max_length=50000):
             D.extend(create_pretraining_corpus(text_chunk, nlp, window_size=40))
             
         logger.info("Total number of relation statements in pre-training corpus: %d" % len(D))
-        save_as_pickle("D.pkl", D)
+        save_as_pickle(args, "D.pkl", D)
         logger.info("Saved pre-training corpus to %s" % "./data/D.pkl")
     else:
         logger.info("Loaded pre-training data from saved file")
-        D = load_pickle("D.pkl")
+        D = load_pickle(args, "D.pkl")
         
     train_set = pretrain_dataset(args, D, batch_size=args.batch_size)
     train_length = len(train_set)
