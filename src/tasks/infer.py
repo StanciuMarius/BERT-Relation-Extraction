@@ -21,8 +21,8 @@ logging.basicConfig(format='%(asctime)s [%(levelname)s]: %(message)s', \
                     datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.INFO)
 logger = logging.getLogger('__file__')
 
-def load_pickle(filename):
-    completeName = os.path.join("./data/",\
+def load_pickle(args, filename):
+    completeName = os.path.join(args.temp_folder_path,\
                                 filename)
     with open(completeName, 'rb') as pkl_file:
         data = pickle.load(pkl_file)
@@ -168,7 +168,7 @@ class infer_from_trained(object):
                         [i for i, e in enumerate(x) if e == self.e2_id][0])
         return e1_e2_start
     
-    def infer_one_sentence(self, sentence):
+    def infer_one_sentence(self, sentence, return_probabilities=False):
         self.net.eval()
         tokenized = self.tokenizer.encode(sentence); #print(tokenized)
         e1_e2_start = self.get_e1e2_start(tokenized); #print(e1_e2_start)
@@ -184,9 +184,16 @@ class infer_from_trained(object):
             
         classification_logits = self.net(tokenized, token_type_ids=token_type_ids, attention_mask=attention_mask, Q=None,\
                                     e1_e2_start=e1_e2_start)
-        predicted = torch.softmax(classification_logits, dim=1).max(1)[1].item()
-        print("Sentence: ", sentence)
-        print("Predicted: ", self.rm.idx2rel[predicted].strip(), '\n')
+        class_probabilities = torch.softmax(classification_logits, dim=1)
+        if return_probabilities:
+            predicted = []
+            for idx in range(0, class_probabilities.shape[1]):
+                predicted.append((self.rm.idx2rel[idx].strip(), float(class_probabilities[0, idx].data)))
+            predicted = sorted(predicted, key=lambda x: x[1])
+        else:
+            predicted = class_probabilities.max(1)[1].item()
+            print("Sentence: ", sentence)
+            print("Predicted: ", self.rm.idx2rel[predicted].strip(), '\n')
         return predicted
     
     def infer_sentence(self, sentence, detect_entities=False):

@@ -9,7 +9,7 @@ import pickle
 import re
 from itertools import permutations
 
-def load_pickle(args, ilename):
+def load_pickle(args, filename):
     completeName = os.path.join(args.temp_folder_path,\
                                 filename)
     with open(completeName, 'rb') as pkl_file:

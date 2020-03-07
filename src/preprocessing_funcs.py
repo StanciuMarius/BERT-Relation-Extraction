@@ -202,7 +202,7 @@ class pretrain_dataset(Dataset):
                                label4_pad_value=-1)
         
         save_as_pickle(args, "%s_tokenizer.pkl" % (model_name), self.tokenizer)
-        logger.info("Saved %s tokenizer at ./data/%s_tokenizer.pkl" % (model_name, model_name))
+        logger.info("Saved %s tokenizer at ./temp_folder_path/%s_tokenizer.pkl" % (model_name, model_name))
         
     def put_blanks(self, D):
         blank_e1 = np.random.uniform()
@@ -394,7 +394,7 @@ def load_dataloaders(args, max_length=50000):
             
         logger.info("Total number of relation statements in pre-training corpus: %d" % len(D))
         save_as_pickle(args, "D.pkl", D)
-        logger.info("Saved pre-training corpus to %s" % "./data/D.pkl")
+        logger.info("Saved pre-training corpus to %s" % "./temp_folder_path/D.pkl")
     else:
         logger.info("Loaded pre-training data from saved file")
         D = load_pickle(args, "D.pkl")

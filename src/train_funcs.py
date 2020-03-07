@@ -45,7 +45,7 @@ class Two_Headed_Loss(nn.Module):
 
 def load_state(net, optimizer, scheduler, args, load_best=False):
     """ Loads saved model and optimizer states if exists """
-    base_path = "./data/"
+    base_path = args.temp_folder_path
     amp_checkpoint = None
     checkpoint_path = os.path.join(base_path,"test_checkpoint_%d.pth.tar" % args.model_no)
     best_path = os.path.join(base_path,"test_model_best_%d.pth.tar" % args.model_no)
@@ -70,8 +70,8 @@ def load_state(net, optimizer, scheduler, args, load_best=False):
 
 def load_results(model_no=0):
     """ Loads saved results if exists """
-    losses_path = "./data/test_losses_per_epoch_%d.pkl" % model_no
-    accuracy_path = "./data/test_accuracy_per_epoch_%d.pkl" % model_no
+    losses_path = os.path.join(args.temp_folder_path, "test_losses_per_epoch_%d.pkl" % model_no)
+    accuracy_path = os.path.join(args.temp_folder_path, "test_accuracy_per_epoch_%d.pkl" % model_no)
     if os.path.isfile(losses_path) and os.path.isfile(accuracy_path):
         losses_per_epoch = load_pickle(args, "test_losses_per_epoch_%d.pkl" % model_no)
         accuracy_per_epoch = load_pickle(args, "test_accuracy_per_epoch_%d.pkl" % model_no)

@@ -56,21 +56,21 @@ def preprocess_qald(args):
     '''
     Data preprocessing for SemEval2010 task 8 dataset
     '''
-    data_path = args.train_data #'./data/SemEval2010_task8_all_data/SemEval2010_task8_training/TRAIN_FILE.TXT'
+    data_path = args.train_data
     logger.info("Reading training file %s..." % data_path)
     with open(data_path, 'r', encoding='utf8') as file:
         texts, relations = process_qald_json(file)
 
     df_train = pd.DataFrame(data={'sents': texts, 'relations': relations})
     
-    data_path = args.test_data #'./data/SemEval2010_task8_all_data/SemEval2010_task8_testing_keys/TEST_FILE_FULL.TXT'
+    data_path = args.test_data
     logger.info("Reading test file %s..." % data_path)
     with open(data_path, 'r', encoding='utf8') as file:
         texts, relations = process_qald_json(file)
     
     df_test = pd.DataFrame(data={'sents': texts, 'relations': relations})
     
-    rm = Relations_Mapper(df_train['relations'])
+    rm = Relations_Mapper(pd.concat([df_train['relations'], df_test['relations']]))
     save_as_pickle(args, 'relations.pkl', rm)
     df_test['relations_id'] = df_test.progress_apply(lambda x: rm.rel2idx[x['relations']], axis=1)
     df_train['relations_id'] = df_train.progress_apply(lambda x: rm.rel2idx[x['relations']], axis=1)
@@ -84,7 +84,7 @@ def preprocess_semeval2010_8(args):
     '''
     Data preprocessing for SemEval2010 task 8 dataset
     '''
-    data_path = args.train_data #'./data/SemEval2010_task8_all_data/SemEval2010_task8_training/TRAIN_FILE.TXT'
+    data_path = args.train_data
     logger.info("Reading training file %s..." % data_path)
     with open(data_path, 'r', encoding='utf8') as f:
         text = f.readlines()
@@ -92,7 +92,7 @@ def preprocess_semeval2010_8(args):
     sents, relations, comments, blanks = process_text(text, 'train')
     df_train = pd.DataFrame(data={'sents': sents, 'relations': relations})
     
-    data_path = args.test_data #'./data/SemEval2010_task8_all_data/SemEval2010_task8_testing_keys/TEST_FILE_FULL.TXT'
+    data_path = args.test_data
     logger.info("Reading test file %s..." % data_path)
     with open(data_path, 'r', encoding='utf8') as f:
         text = f.readlines()
@@ -189,7 +189,7 @@ def load_dataloaders(args):
         lower_case = False
         model_name = 'ALBERT'
         
-    if os.path.isfile("./data/%s_tokenizer.pkl" % model_name):
+    if os.path.isfile(os.path.join(args.temp_folder_path, "%s_tokenizer.pkl" % model_name)):
         tokenizer = load_pickle(args, "%s_tokenizer.pkl" % model_name)
         logger.info("Loaded tokenizer from pre-trained blanks model")
     else:
@@ -203,11 +203,11 @@ def load_dataloaders(args):
         tokenizer.add_tokens(['[E1]', '[/E1]', '[E2]', '[/E2]', '[BLANK]'] + additional_tokens)
 
         save_as_pickle(args, "%s_tokenizer.pkl" % model_name, tokenizer)
-        logger.info("Saved %s tokenizer at ./data/%s_tokenizer.pkl" %(model_name, model_name))
+        logger.info("Saved %s tokenizer at ./temp_folder_path/%s_tokenizer.pkl" %(model_name, model_name))
     
-    relations_path = './data/relations.pkl'
-    train_path = './data/df_train.pkl'
-    test_path = './data/df_test.pkl'
+    relations_path = os.path.join(args.temp_folder_path, 'relations.pkl')
+    train_path = os.path.join(args.temp_folder_path, 'df_train.pkl')
+    test_path = os.path.join(args.temp_folder_path, 'df_test.pkl')
     if os.path.isfile(relations_path) and os.path.isfile(train_path) and os.path.isfile(test_path):
         rm = load_pickle(args, 'relations.pkl')
         df_train = load_pickle(args, 'df_train.pkl')
