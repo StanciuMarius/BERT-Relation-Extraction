@@ -6,9 +6,10 @@ Created on Mon Dec  2 17:40:16 2019
 @author: weetee
 """
 import sys
-from src.tasks.preprocessing_funcs import load_dataloaders
-from src.tasks.trainer import train_and_fit
-from src.tasks.infer import infer_from_trained
+import os
+from .src.tasks.preprocessing_funcs import load_dataloaders
+from .src.tasks.trainer import train_and_fit
+from .src.tasks.infer import infer_from_trained
 import logging
 from argparse import ArgumentParser
 
@@ -20,7 +21,7 @@ logging.basicConfig(format='%(asctime)s [%(levelname)s]: %(message)s', \
                     datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.INFO)
 logger = logging.getLogger('__file__')
 
-def main(argv):
+def parse_arguments(argv):
     parser = ArgumentParser()
     parser.add_argument("--train_data", type=str, default='./data/SemEval2010_task8_all_data/SemEval2010_task8_training/TRAIN_FILE.TXT', \
                         help="training data .txt file path")
@@ -44,7 +45,16 @@ def main(argv):
     parser.add_argument("--train", type=int, default=1, help="0: Don't train, 1: train")
     parser.add_argument("--infer", type=int, default=1, help="0: Don't infer, 1: Infer")
     
-    args = parser.parse_args(argv)
+    return parser.parse_args(argv)
+
+def load_inferrer_from_trained(argv):
+    args = parse_arguments(argv)
+    inferer = infer_from_trained(args, detect_entities=False)
+    return inferer
+
+def main(argv):
+    
+    args = parse_arguments(argv)
     
     if args.train == 1:
         net = train_and_fit(args)
