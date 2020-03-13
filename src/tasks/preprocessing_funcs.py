@@ -161,6 +161,8 @@ class semeval_dataset(Dataset):
         logger.info("Tokenizing data...")
         self.df['input'] = self.df.progress_apply(lambda x: tokenizer.encode(x['sents']),\
                                                              axis=1)
+        self.df[self.df.apply(lambda x: len(x['input']) < 500, axis=1)] # Filter out sequences that are too long
+
         def get_e1e2_start(x, e1_id, e2_id):
             e1_e2_start = ([i for i, e in enumerate(x) if e == e1_id][0],\
                             [i for i, e in enumerate(x) if e == e2_id][0])

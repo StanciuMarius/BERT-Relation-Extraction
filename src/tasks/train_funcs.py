@@ -43,8 +43,9 @@ def load_state(net, optimizer, scheduler, args, load_best=False):
         logger.info("Loaded model and optimizer.")    
     return start_epoch, best_pred, amp_checkpoint
 
-def load_results(args, model_no=0):
+def load_results(args):
     """ Loads saved results if exists """
+    model_no = args.model_no
     losses_path = os.path.join(args.temp_folder_path, "task_test_losses_per_epoch_%d.pkl" % model_no)
     accuracy_path = os.path.join(args.temp_folder_path, "task_train_accuracy_per_epoch_%d.pkl" % model_no)
     f1_path = os.path.join(args.temp_folder_path, "task_test_f1_per_epoch_%d.pkl" % model_no)
